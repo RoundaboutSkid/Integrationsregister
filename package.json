@@ -5,6 +5,9 @@
   "type": "module",
   "engines": { "node": ">=18" },
   "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
     "validate": "tsx scripts/validate-metadata.ts",
     "lint:secrets": "tsx scripts/lint-secrets.ts",
     "ingest": "tsx scripts/ingest-all.ts",
@@ -12,14 +15,21 @@
     "gen:doc": "tsx scripts/generate-doc.ts"
   },
   "dependencies": {
+    "@hookform/resolvers": "^3.9.0",
     "glob": "^11.0.0",
     "gray-matter": "^4.0.3",
     "neo4j-driver": "^5.25.0",
+    "next": "^14.2.12",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-hook-form": "^7.53.0",
     "yaml": "^2.5.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/node": "^22.5.4",
+    "@types/react": "^18.3.5",
+    "@types/react-dom": "^18.3.0",
     "tsx": "^4.16.2",
     "typescript": "^5.6.2"
   }

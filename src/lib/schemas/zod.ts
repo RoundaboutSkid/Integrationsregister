@@ -1,4 +1,35 @@
-import { z } from "zod";
+﻿import { z } from "zod";
+
+export const LifecycleStageSchema = z.enum([
+  "draft",
+  "design_review",
+  "approved",
+  "test_ready",
+  "qa_ready",
+  "prod_ready",
+  "operational"
+]);
+export type LifecycleStage = z.infer<typeof LifecycleStageSchema>;
+
+const Lifecycle = z
+  .object({
+    stage: LifecycleStageSchema.default("draft"),
+    updated_by: z.string().optional(),
+    updated_at: z.string().optional()
+  })
+  .partial({ updated_by: true, updated_at: true });
+
+const Approvals = z
+  .object({
+    architect: z.string().optional(),
+    integrator: z.string().optional(),
+    tester: z.string().optional(),
+    ops: z.string().optional(),
+    security: z.string().optional()
+  })
+  .partial();
+
+const Environments = z.record(z.string(), z.record(z.any())).optional();
 
 // Shared
 export const ServiceRoles = z.object({
@@ -6,19 +37,21 @@ export const ServiceRoles = z.object({
   consumer_systems: z.array(z.string()).default([])
 });
 
-export const DataRoles = z.object({
-  publisher_system: z.string().optional(),
-  subscriber_systems: z.array(z.string()).optional(),
-  source_system: z.string().optional(),
-  target_system: z.string().optional()
-}).partial();
+export const DataRoles = z
+  .object({
+    publisher_system: z.string().optional(),
+    subscriber_systems: z.array(z.string()).optional(),
+    source_system: z.string().optional(),
+    target_system: z.string().optional()
+  })
+  .partial();
 
 export const Security = z.object({
   encryption: z.enum(["Okrypterad kanal", "Krypterad kanal med publik nyckel"]),
   server_identification: z.enum(["Anonym server", "Serveridentifiering med publik nyckel"]),
   access_control: z.union([
     z.enum(["Username/Password", "API-nyckel", "Klientcertifikat", "OAuth2/OIDC", "Private Key JWT"]),
-    z.enum(["Username/Password", "API-nyckel", "Klientcertifikat", "SSH Public Key Authentication"]) // async alt
+    z.enum(["Username/Password", "API-nyckel", "Klientcertifikat", "SSH Public Key Authentication"])
   ])
 });
 
@@ -52,18 +85,25 @@ export const HttpProxyInterface = z.object({
   endpoint: EndpointHTTP
 });
 
-export const HttpProxyDoc = z.object({
-  template: z.literal("Integrationsbeskrivning Synkront flöde HTTP (proxy)"),
-  metadata_version: z.literal("1.0"),
-  integration: z.object({
-    id: z.string(),
-    title: z.string(),
-    pattern: z.literal("http_proxy_sync"),
-    interaction_type: z.enum(["One-way", "Request-Reply"])
-  }).passthrough(),
-  systems: z.object({ app1: z.any(), rtjp: z.any(), app2: z.any() }),
-  interfaces: z.array(HttpProxyInterface).min(2)
-}).passthrough();
+export const HttpProxyDoc = z
+  .object({
+    template: z.literal("Integrationsbeskrivning Synkront flöde HTTP (proxy)"),
+    metadata_version: z.literal("1.0"),
+    integration: z
+      .object({
+        id: z.string(),
+        title: z.string(),
+        pattern: z.literal("http_proxy_sync"),
+        interaction_type: z.enum(["One-way", "Request-Reply"])
+      })
+      .passthrough(),
+    lifecycle: Lifecycle.optional(),
+    systems: z.object({ app1: z.any(), rtjp: z.any(), app2: z.any() }),
+    interfaces: z.array(HttpProxyInterface).min(2),
+    environments: Environments,
+    approvals: Approvals.optional()
+  })
+  .passthrough();
 
 // RIV-TA Sync
 export const RivtaInterface = z.object({
@@ -87,13 +127,20 @@ export const RivtaInterface = z.object({
   rivta: z.object({ contract: z.string().optional() }).optional()
 });
 
-export const RivtaDoc = z.object({
-  template: z.literal("Integrationsbeskrivning Synkront flöde RIV-TA"),
-  metadata_version: z.literal("1.0"),
-  integration: z.object({ id: z.string(), title: z.string(), pattern: z.literal("rivta_sync"), interaction_type: z.enum(["One-way", "Request-Reply"]) }).passthrough(),
-  systems: z.object({ app1: z.any(), rtjp: z.any(), app2: z.any() }),
-  interfaces: z.array(RivtaInterface).min(2)
-}).passthrough();
+export const RivtaDoc = z
+  .object({
+    template: z.literal("Integrationsbeskrivning Synkront flöde RIV-TA"),
+    metadata_version: z.literal("1.0"),
+    integration: z
+      .object({ id: z.string(), title: z.string(), pattern: z.literal("rivta_sync"), interaction_type: z.enum(["One-way", "Request-Reply"]) })
+      .passthrough(),
+    lifecycle: Lifecycle.optional(),
+    systems: z.object({ app1: z.any(), rtjp: z.any(), app2: z.any() }),
+    interfaces: z.array(RivtaInterface).min(2),
+    environments: Environments,
+    approvals: Approvals.optional()
+  })
+  .passthrough();
 
 // Async Flow
 export const AsyncInterface = z.object({
@@ -130,26 +177,44 @@ export const AsyncInterface = z.object({
   channel: z.object({ type: z.enum(["jms", "fileshare", "smtp", "mllp"]), name: z.string().optional() }).optional()
 });
 
-export const AsyncDoc = z.object({
-  template: z.literal("Integrationsbeskrivning Asynkront flöde"),
-  metadata_version: z.literal("1.0"),
-  integration: z.object({
-    id: z.string(),
-    title: z.string(),
-    pattern: z.literal("async_flow"),
-    interaction_type: z.enum(["One-way", "Publish-Subscribe"]),
-    flow_variant: z.enum(["Asynkront flöde", "Asynkront flöde med bearbetning"])
-  }).passthrough(),
-  systems: z.object({ app1: z.any(), rtjp: z.any(), app2: z.any() }),
-  interfaces: z.array(AsyncInterface).min(2),
-  processing_steps: z.array(z.object({
-    order: z.number().int().positive(),
-    description: z.string(),
-    spec_ref: z.string().optional(),
-    realization_component: z.string().optional()
-  })).optional()
-}).passthrough();
+export const AsyncDoc = z
+  .object({
+    template: z.literal("Integrationsbeskrivning Asynkront flöde"),
+    metadata_version: z.literal("1.0"),
+    integration: z
+      .object({
+        id: z.string(),
+        title: z.string(),
+        pattern: z.literal("async_flow"),
+        interaction_type: z.enum(["One-way", "Publish-Subscribe"]),
+        flow_variant: z.enum(["Asynkront flöde", "Asynkront flöde med bearbetning"])
+      })
+      .passthrough(),
+    lifecycle: Lifecycle.optional(),
+    systems: z.object({ app1: z.any(), rtjp: z.any(), app2: z.any() }),
+    interfaces: z.array(AsyncInterface).min(2),
+    processing_steps: z
+      .array(
+        z.object({
+          order: z.number().int().positive(),
+          description: z.string(),
+          spec_ref: z.string().optional(),
+          realization_component: z.string().optional()
+        })
+      )
+      .optional(),
+    environments: Environments,
+    approvals: Approvals.optional()
+  })
+  .passthrough();
 
-// Unified union (se till att AsyncDoc verkligen ingår)
+// Unified union
 export const UnifiedDoc = z.union([HttpProxyDoc, RivtaDoc, AsyncDoc]);
 export type UnifiedDoc = z.infer<typeof UnifiedDoc>;
+
+export const UnifiedDocForm = z.union([
+  HttpProxyDoc.deepPartial(),
+  RivtaDoc.deepPartial(),
+  AsyncDoc.deepPartial()
+]);
+export type UnifiedDocForm = z.infer<typeof UnifiedDocForm>;

@@ -1,0 +1,4 @@
+{
+  "/_not-found/page": "app/_not-found/page.js",
+  "/integrations/[integrationId]/wizard/page": "app/integrations/[integrationId]/wizard/page.js"
+}
