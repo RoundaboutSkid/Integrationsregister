@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/schemas/http_proxy_sync.v1.json",
+  "title": "Integrationsbeskrivning Synkront flöde HTTP (proxy)",
+  "type": "object",
+  "required": ["template", "metadata_version", "integration", "systems", "interfaces"],
+  "properties": {
+    "template": {"const": "Integrationsbeskrivning Synkront flöde HTTP (proxy)"},
+    "metadata_version": {"const": "1.0"},
+    "integration": {
+      "type": "object",
+      "required": ["id", "title", "pattern", "interaction_type"],
+      "properties": {
+        "id": {"type": "string"},
+        "title": {"type": "string"},
+        "pattern": {"const": "http_proxy_sync"},
+        "interaction_type": {"enum": ["One-way", "Request-Reply"]},
+        "information_object": {"type": "string"},
+        "information_classification": {"type": "string"},
+        "diagram_ref": {"type": "string"},
+        "refs": {"type": "object"}
+      }
+    },
+    "systems": {
+      "type": "object",
+      "required": ["app1", "rtjp", "app2"],
+      "properties": {
+        "app1": {"type": "object"},
+        "rtjp": {"type": "object"},
+        "app2": {"type": "object"}
+      }
+    },
+    "interfaces": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "leg",
+          "connection_pattern",
+          "service_roles",
+          "data_flow",
+          "security",
+          "endpoint"
+        ],
+        "properties": {
+          "id": {"type": "string"},
+          "leg": {"enum": ["app_to_rtjp", "rtjp_to_app"]},
+          "connection_pattern": {"type": "string"},
+          "service_roles": {
+            "type": "object",
+            "required": ["producer_system", "consumer_systems"],
+            "properties": {
+              "producer_system": {"type": "string"},
+              "consumer_systems": {"type": "array", "items": {"type": "string"}}
+            }
+          },
+          "data_flow": {
+            "type": "object",
+            "required": ["direction", "protocol", "endpoint", "format"],
+            "properties": {
+              "direction": {"enum": ["request", "response", "push", "pull", "publish", "subscribe"]},
+              "protocol": {"const": "https"},
+              "endpoint": {"type": "string"},
+              "format": {"type": "string"}
+            }
+          },
+          "data_roles": {
+            "type": "object",
+            "properties": {
+              "publisher_system": {"type": "string"},
+              "subscriber_systems": {"type": "array", "items": {"type": "string"}},
+              "source_system": {"type": "string"},
+              "target_system": {"type": "string"}
+            },
+            "additionalProperties": false
+          },
+          "security": {
+            "type": "object",
+            "required": ["encryption", "server_identification", "access_control"],
+            "properties": {
+              "encryption": {"enum": ["Okrypterad kanal", "Krypterad kanal med publik nyckel"]},
+              "server_identification": {"enum": ["Anonym server", "Serveridentifiering med publik nyckel"]},
+              "access_control": {"enum": ["Username/Password", "API-nyckel", "Klientcertifikat", "OAuth2/OIDC", "Private Key JWT"]}
+            }
+          },
+          "interface": {"type": "object"},
+          "realization": {"type": "object"},
+          "endpoint": {
+            "type": "object",
+            "required": ["protocol"],
+            "properties": {
+              "protocol": {"const": "https"},
+              "url": {"type": "string"}
+            }
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

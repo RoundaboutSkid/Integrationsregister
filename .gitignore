@@ -1,0 +1,7 @@
+.git
+.vscode
+.DS_Store
+*.log
+__xl/
+/node_modules/
+api/node_modules/

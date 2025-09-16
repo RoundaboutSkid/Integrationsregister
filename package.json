@@ -1,0 +1,26 @@
+{
+  "name": "integrationsregister",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "validate": "tsx scripts/validate-metadata.ts",
+    "lint:secrets": "tsx scripts/lint-secrets.ts",
+    "ingest": "tsx scripts/ingest-all.ts",
+    "migrate": "node scripts/migrate.js",
+    "gen:doc": "tsx scripts/generate-doc.ts"
+  },
+  "dependencies": {
+    "glob": "^11.0.0",
+    "gray-matter": "^4.0.3",
+    "neo4j-driver": "^5.25.0",
+    "yaml": "^2.5.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.5.4",
+    "tsx": "^4.16.2",
+    "typescript": "^5.6.2"
+  }
+}

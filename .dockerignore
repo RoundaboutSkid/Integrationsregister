@@ -1,0 +1,10 @@
+# Reduce build context and avoid Windows archive mode issues
+.git
+.vscode
+.DS_Store
+*.log
+__xl/
+/node_modules/
+**/node_modules/
+api/node_modules/
+
