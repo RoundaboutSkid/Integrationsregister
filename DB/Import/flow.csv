@@ -1,0 +1,3 @@
+flow_id,integration_id,order_index,kind,transport,protocol,format,endpoint_ref,mode,data_object_ref,authn,source_system_id,source_system_name,target_system_id,target_system_name
+F-0001,INT-0001,10,request,api,HTTP,JSON,POST /orders,realtime,Order,oauth2,app-a,App A,api-b,ERP API
+F-0002,INT-0001,20,response,api,HTTP,JSON,200 OK,realtime,Order,oauth2,api-b,ERP API,app-a,App A

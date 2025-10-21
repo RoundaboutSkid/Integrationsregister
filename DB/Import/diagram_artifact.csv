@@ -1,0 +1,3 @@
+diagram_id,integration_id,type,title,source_tool,format,storage_path,hash,version,created_at,generated_from_model
+DIA-0001,INT-0001,sequence,Sekvens – Order,visio,svg,repo/docs/INT-0001/sequence.svg,,1.0,2025-10-20,false
+DIA-0002,INT-0001,overview,Översikt – Order,visio,svg,repo/docs/INT-0001/overview.svg,,1.0,2025-10-20,false

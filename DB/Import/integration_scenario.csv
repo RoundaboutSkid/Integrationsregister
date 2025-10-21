@@ -1,0 +1,2 @@
+scenario_id,scenario_name,description,draft,security_class,has_pii,design_id
+ISC-0001,Order till Faktura,End-to-end order→faktura,false,K2,true,ISL-001

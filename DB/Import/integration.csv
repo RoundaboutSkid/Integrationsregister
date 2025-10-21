@@ -1,0 +1,2 @@
+integration_id,integration_name,description,scenario_id,transport,mode,protocol,format
+INT-0001,Order API,Request/Response mot ERP,ISC-0001,api,realtime,HTTP,JSON
